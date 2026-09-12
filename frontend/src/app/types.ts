@@ -1,0 +1,3 @@
+export type Issue = {id:number; job_id:string; category:string; column_name:string|null; issue_type:string; severity:string; affected_rows:number; status:string};
+export type ColumnProfile = {name:string; semantic_type:string; null_count:number; null_pct:number; unique_count:number; unique_pct:number; min_val:string|null; max_val:string|null};
+export type Overview = {job:{id:string;filename:string;status:string;row_count:number;col_count:number;health_score:number;completeness_score:number;validity_score:number;consistency_score:number;uniqueness_score:number};metrics:{total_issues:number;affected_rows:number;columns_with_issues:number}};
