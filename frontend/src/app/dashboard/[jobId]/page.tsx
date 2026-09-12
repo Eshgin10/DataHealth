@@ -50,7 +50,7 @@ export default function OverviewPage() {
 
     };
 
-    
+
 
     // Poll while uploading/profiling
 
@@ -138,7 +138,7 @@ export default function OverviewPage() {
 
         </div>
 
-        
+
 
         <div className="bg-white rounded-3xl p-6 border border-brand-dark/5 shadow-sm">
 
@@ -148,7 +148,7 @@ export default function OverviewPage() {
 
         </div>
 
-        
+
 
         <div className="bg-white rounded-3xl p-6 border border-brand-dark/5 shadow-sm">
 
@@ -158,7 +158,7 @@ export default function OverviewPage() {
 
         </div>
 
-        
+
 
         <div className="bg-white rounded-3xl p-6 border border-brand-dark/5 shadow-sm">
 
@@ -194,7 +194,7 @@ export default function OverviewPage() {
 
         </div>
 
-        
+
 
         <div className="bg-brand-dark text-white rounded-3xl p-8 shadow-sm">
 
@@ -284,9 +284,9 @@ function ScoreBar({ label, score }: { label: string, score: number }) {
 
       <div className="w-full h-3 bg-brand-light rounded-full overflow-hidden">
 
-        <div 
+        <div
 
-          className="h-full bg-brand-primary transition-all duration-1000 ease-out rounded-full" 
+          className="h-full bg-brand-primary transition-all duration-1000 ease-out rounded-full"
 
           style={{ width: `${score}%` }}
 
@@ -299,4 +299,3 @@ function ScoreBar({ label, score }: { label: string, score: number }) {
   );
 
 }
-

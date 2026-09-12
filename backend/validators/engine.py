@@ -3,7 +3,7 @@ import numpy as np
 
 def validate_dataframe(df: pd.DataFrame, profiles: dict) -> list:
     issues = []
-    
+
     # 1. Missing Data
     for col in df.columns:
         missing_mask = df[col].isna() | (df[col] == "")
@@ -16,7 +16,7 @@ def validate_dataframe(df: pd.DataFrame, profiles: dict) -> list:
                 "severity": "medium",
                 "affected_rows": int(missing_count)
             })
-            
+
     # 2. Duplicates
     dup_mask = df.duplicated(keep=False)
     dup_count = dup_mask.sum()
@@ -28,15 +28,15 @@ def validate_dataframe(df: pd.DataFrame, profiles: dict) -> list:
             "severity": "high",
             "affected_rows": int(dup_count)
         })
-        
+
     for col, prof in profiles.items():
         s = df[col].dropna()
         if len(s) == 0:
             continue
-            
+
         sem_type = prof['type']
         s_str = s.astype(str)
-        
+
         # 3. Format Issues (Email)
         if sem_type == "email":
             invalid_mask = ~s_str.str.contains(r'^[\w\.-]+@[\w\.-]+\.\w+$', regex=True)
@@ -49,7 +49,7 @@ def validate_dataframe(df: pd.DataFrame, profiles: dict) -> list:
                     "severity": "high",
                     "affected_rows": int(invalid_count)
                 })
-                
+
         # 4. Format Issues (Phone)
         elif sem_type == "phone":
             invalid_mask = ~s_str.str.contains(r'^\+?[\d\s\-\(\)]+$', regex=True)
@@ -62,7 +62,7 @@ def validate_dataframe(df: pd.DataFrame, profiles: dict) -> list:
                     "severity": "medium",
                     "affected_rows": int(invalid_count)
                 })
-                
+
         # 5. Outliers (Numeric)
         elif sem_type == "numeric":
             s_num = pd.to_numeric(s, errors='coerce')
@@ -71,10 +71,10 @@ def validate_dataframe(df: pd.DataFrame, profiles: dict) -> list:
             iqr = q3 - q1
             outlier_mask = (s_num < (q1 - 1.5 * iqr)) | (s_num > (q3 + 1.5 * iqr))
             outlier_count = outlier_mask.sum()
-            
+
             neg_mask = s_num < 0
             neg_count = neg_mask.sum()
-            
+
             if outlier_count > 0:
                 issues.append({
                     "category": "NUMERIC ANOMALIES",
@@ -91,7 +91,7 @@ def validate_dataframe(df: pd.DataFrame, profiles: dict) -> list:
                     "severity": "high",
                     "affected_rows": int(neg_count)
                 })
-                
+
         # 6. Categorical Inconsistencies
         elif sem_type in ["categorical", "free text"]:
             s_lower = s_str.str.lower()
@@ -103,7 +103,7 @@ def validate_dataframe(df: pd.DataFrame, profiles: dict) -> list:
                     "severity": "medium",
                     "affected_rows": int((s_str != s_lower).sum())
                 })
-            
+
             s_stripped = s_str.str.strip()
             whitespace_issues = (s_str != s_stripped).sum()
             if whitespace_issues > 0:
