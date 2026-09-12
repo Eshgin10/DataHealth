@@ -19,3 +19,8 @@ app.include_router(jobs.router, prefix="/api")
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Data Health API"}
+
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}

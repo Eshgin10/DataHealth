@@ -89,3 +89,29 @@ Original CSV uploads are retained; cleaning writes a separate file. Local databa
 This is a local, single-workspace application without authentication or tenant isolation. Add those controls before exposing it to untrusted users. Validation is heuristic: review findings and casing changes before using exported data. Issue occurrences can overlap within a record and are not a count of distinct affected rows.
 
 The health score weights completeness (25%), validity (30%), consistency (20%), and uniqueness (15%), plus a fixed 10-point baseline. It is a quality indicator, not a guarantee of correctness.
+
+## Deploy to Railway
+
+The root Dockerfile packages Next.js and FastAPI into one service. Railway builds it directly from this repository. The API listens only inside the container, and Next.js forwards browser API requests to it.
+
+1. In [Railway](https://railway.com/new), choose **Deploy from GitHub repo** and select `Eshgin10/DataHealth`.
+2. Use the repository root as the service root. Railway detects `Dockerfile` and `railway.toml` automatically.
+3. Attach a persistent volume at `/data` **before uploading real datasets**. The SQLite database and raw/cleaned uploads live there. Without a volume, redeployments lose that data.
+4. Set `PORT=3000`. Leave `API_URL` unset: the image builds with the internal API address. Keep a single replica because the app uses SQLite and local files.
+5. Under Networking, generate a public domain with target port `3000`.
+6. Wait for a healthy deployment. Open the domain, run the sample dataset, apply a cleaning action, and download the result. `/api/health` should return `{"status":"ok"}`.
+
+Review Railway's displayed plan and storage charges before accepting paid resources. No hosting subscription is provisioned by these repository files.
+
+**Audience:** the app currently has a shared dataset list and no login. Use synthetic/non-sensitive data for a public demo. Add authentication and per-user data isolation before accepting private datasets.
+
+The container startup script waits for the API, starts Next.js, forwards termination signals, and exits if either service fails so the platform can restart it. The health check reaches the API through the frontend.
+
+### Build and run with Docker
+
+```sh
+docker build -t datahealth .
+docker run --rm -p 3000:3000 -v datahealth-data:/data datahealth
+```
+
+Container execution must be verified on a machine with Docker or by Railway's build. Local Python/TypeScript checks do not replace a container build.
